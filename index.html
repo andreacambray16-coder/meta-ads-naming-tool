@@ -496,6 +496,11 @@
         </div>
 
         <div class="field">
+          <label>Ciudad <span style="color:var(--muted);font-weight:400;text-transform:none;">(opcional)</span></label>
+          <input type="text" id="c-ciudad" placeholder="Ej: CDMX, Guadalajara, Monterrey" oninput="updatePreviews()" />
+        </div>
+
+        <div class="field">
           <label>Mes / Año</label>
           <input type="month" id="c-fecha" oninput="updatePreviews()" />
         </div>
@@ -882,6 +887,7 @@
       chipState['chips-objetivo'],
       clean(document.getElementById('c-producto').value),
       chipState['chips-mercado'],
+      clean(document.getElementById('c-ciudad').value),
       fmtDate(document.getElementById('c-fecha').value),
       chipState['chips-estrategia'],
     ].filter(Boolean);
