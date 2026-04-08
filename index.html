@@ -21,6 +21,7 @@
       --campaign: #7B61FF;
       --adset: #E8583A;
       --ad: #5CBA8A;
+      --utm: #00B8D9;
     }
 
     body {
@@ -98,6 +99,7 @@
     .card-level.campaign { border-top-color: var(--campaign); }
     .card-level.adset { border-top-color: var(--adset); }
     .card-level.ad { border-top-color: var(--ad); }
+    .card-level.utm { border-top-color: var(--utm); }
 
     /* ─── FORM ELEMENTS ─── */
     label {
@@ -259,6 +261,7 @@
     .td-level.campaign { background: rgba(123,97,255,0.15); color: var(--campaign); }
     .td-level.adset { background: rgba(232,88,58,0.15); color: var(--adset); }
     .td-level.ad { background: rgba(92,186,138,0.15); color: var(--ad); }
+    .td-level.utm { background: rgba(0,184,217,0.15); color: var(--utm); }
     .td-name { font-family: 'Space Mono', monospace; font-size: 12px; }
 
     /* ─── BUTTONS ─── */
@@ -302,6 +305,24 @@
     .tab.active-campaign { background: rgba(123,97,255,0.15); border-color: var(--campaign); color: var(--campaign); }
     .tab.active-adset { background: rgba(232,88,58,0.15); border-color: var(--adset); color: var(--adset); }
     .tab.active-ad { background: rgba(92,186,138,0.15); border-color: var(--ad); color: var(--ad); }
+    .tab.active-utm { background: rgba(0,184,217,0.15); border-color: var(--utm); color: var(--utm); }
+
+    /* ─── UTM URL BOX ─── */
+    .utm-url-box {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 14px 16px;
+      font-family: 'Space Mono', monospace;
+      font-size: 11px;
+      word-break: break-all;
+      line-height: 1.7;
+      color: var(--text);
+    }
+    .utm-url-box .utm-base { color: var(--muted); }
+    .utm-url-box .utm-param { color: var(--utm); }
+    .utm-url-box .utm-val { color: var(--text); }
+    .utm-url-box.empty { color: var(--muted); font-style: italic; font-family: 'Space Grotesk', sans-serif; }
 
     /* ─── TOAST ─── */
     #toast {
@@ -347,7 +368,7 @@
     <div class="logo-dot"></div>
     <div>
       <h1>Meta Ads Naming Tool</h1>
-      <div style="color:var(--muted);font-size:12px;margin-top:1px;">Generador de nombres · Campañas / Ad Sets / Anuncios</div>
+      <div style="color:var(--muted);font-size:12px;margin-top:1px;">Generador de nombres · Campañas / Ad Sets / Anuncios / UTM</div>
     </div>
   </div>
   <div class="badge">v1.0</div>
@@ -404,6 +425,22 @@
           <span class="formula-part" style="border-color:var(--ad);color:var(--ad);">FECHA</span>
         </div>
       </div>
+      <div>
+        <div style="font-size:11px;color:var(--muted);margin-bottom:6px;font-weight:600;">UTM URL</div>
+        <div class="formula">
+          <span class="formula-part" style="border-color:var(--utm);color:var(--utm);">URL</span>
+          <span class="sep">?</span>
+          <span class="formula-part" style="border-color:var(--utm);color:var(--utm);">utm_source</span>
+          <span class="sep">&</span>
+          <span class="formula-part" style="border-color:var(--utm);color:var(--utm);">utm_medium</span>
+          <span class="sep">&</span>
+          <span class="formula-part" style="border-color:var(--utm);color:var(--utm);">utm_campaign</span>
+          <span class="sep">&</span>
+          <span class="formula-part" style="border-color:var(--utm);color:var(--utm);">utm_content</span>
+          <span class="sep">&</span>
+          <span class="formula-part" style="border-color:var(--utm);color:var(--utm);">utm_term</span>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -412,6 +449,7 @@
     <button class="tab active-campaign" onclick="switchTab('campaign', this)">01 — Campaña</button>
     <button class="tab" onclick="switchTab('adset', this)">02 — Ad Set</button>
     <button class="tab" onclick="switchTab('ad', this)">03 — Anuncio</button>
+    <button class="tab" onclick="switchTab('utm', this)">04 — UTM URL</button>
   </div>
 
   <!-- ══════════════════════════════════════
@@ -686,13 +724,102 @@
   </div>
 
   <!-- ══════════════════════════════════════
+       PANEL UTM
+  ══════════════════════════════════════ -->
+  <div id="panel-utm" style="display:none;">
+    <div class="grid-2">
+      <div class="card card-level utm">
+        <div class="section-header">
+          <div class="section-dot" style="background:var(--utm)"></div>
+          <div class="section-title">Parámetros UTM</div>
+        </div>
+
+        <div class="field">
+          <label>URL de destino</label>
+          <input type="text" id="utm-url" placeholder="https://tudominio.com/landing" oninput="updateUtmPreview()" />
+        </div>
+
+        <div class="field">
+          <label>utm_source</label>
+          <div class="chips" id="chips-utm-source">
+            <span class="chip" data-val="facebook">facebook</span>
+            <span class="chip" data-val="instagram">instagram</span>
+            <span class="chip" data-val="messenger">messenger</span>
+            <span class="chip" data-val="meta">meta</span>
+            <span class="chip" data-val="audience_network">audience_network</span>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>utm_medium</label>
+          <div class="chips" id="chips-utm-medium">
+            <span class="chip" data-val="paid_social">paid_social</span>
+            <span class="chip" data-val="cpc">cpc</span>
+            <span class="chip" data-val="cpm">cpm</span>
+            <span class="chip" data-val="video">video</span>
+            <span class="chip" data-val="display">display</span>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>utm_campaign <span style="color:var(--muted);font-weight:400;text-transform:none;">(nombre de la campaña)</span></label>
+          <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px;">
+            <button class="btn-copy" onclick="autofillUtmCampaign()" style="font-size:12px;padding:6px 14px;">↑ Usar nombre de campaña</button>
+          </div>
+          <input type="text" id="utm-campaign" placeholder="Ej: CONV_QuintoApp_MX_0426_CBO" oninput="updateUtmPreview()" />
+        </div>
+
+        <div class="field">
+          <label>utm_content <span style="color:var(--muted);font-weight:400;text-transform:none;">(nombre del anuncio)</span></label>
+          <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px;">
+            <button class="btn-copy" onclick="autofillUtmContent()" style="font-size:12px;padding:6px 14px;">↑ Usar nombre de anuncio</button>
+          </div>
+          <input type="text" id="utm-content" placeholder="Ej: VID_UGC_Ahorra50_V1_0426" oninput="updateUtmPreview()" />
+        </div>
+
+        <div class="field">
+          <label>utm_term <span style="color:var(--muted);font-weight:400;text-transform:none;">(opcional — audiencia o palabra clave)</span></label>
+          <input type="text" id="utm-term" placeholder="Ej: Finanzas_25-34_MX" oninput="updateUtmPreview()" />
+        </div>
+      </div>
+
+      <div>
+        <div class="card" style="margin-bottom:16px;">
+          <div class="section-header">
+            <div class="section-dot" style="background:var(--utm)"></div>
+            <div class="section-title">URL generada</div>
+          </div>
+          <div id="utm-url-preview" class="utm-url-box empty">Completa los campos →</div>
+          <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;">
+            <button class="btn-copy" style="padding:8px 16px;" onclick="copyUtmUrl(this)">Copiar URL completa</button>
+            <button class="btn-copy" style="padding:8px 16px;" onclick="openUtmUrl()">Abrir en navegador ↗</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="section-header">
+            <div class="section-dot" style="background:var(--accent)"></div>
+            <div class="section-title">Desglose de parámetros</div>
+          </div>
+          <div id="utm-breakdown" style="display:flex;flex-direction:column;gap:8px;">
+            <div style="color:var(--muted);font-size:13px;">Completa los campos para ver el desglose.</div>
+          </div>
+          <div style="margin-top:16px;">
+            <button class="btn btn-primary" onclick="addUtmToResults()">+ Agregar a la lista</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
        RESULTS TABLE
   ══════════════════════════════════════ -->
   <div class="results-card">
     <div class="results-header">
       <div>
         <div class="results-title">Lista de nombres</div>
-        <div class="help-text" style="margin-top:2px;">Agrega nombres desde los tres paneles y exporta el CSV.</div>
+        <div class="help-text" style="margin-top:2px;">Agrega nombres desde los cuatro paneles y exporta el CSV.</div>
       </div>
       <div style="display:flex;align-items:center;gap:12px;">
         <span class="results-count" id="results-count">0 nombres</span>
@@ -721,9 +848,9 @@
   document.querySelectorAll('.chips').forEach(group => {
     const id = group.id;
     chipState[id] = null;
+    const isUtm = id.startsWith('chips-utm-');
     group.querySelectorAll('.chip').forEach(chip => {
       chip.addEventListener('click', () => {
-        // single-select per group
         group.querySelectorAll('.chip').forEach(c => c.classList.remove('selected'));
         if (chipState[id] === chip.dataset.val) {
           chipState[id] = null;
@@ -731,7 +858,8 @@
           chip.classList.add('selected');
           chipState[id] = chip.dataset.val;
         }
-        updatePreviews();
+        if (isUtm) updateUtmPreview();
+        else updatePreviews();
       });
     });
   });
@@ -834,27 +962,29 @@
       return;
     }
 
-    const levelLabel = { campaign: 'Campaña', adset: 'Ad Set', ad: 'Anuncio' };
+    const levelLabel = { campaign: 'Campaña', adset: 'Ad Set', ad: 'Anuncio', utm: 'UTM URL' };
 
     let html = `<table>
       <thead>
         <tr>
           <th>#</th>
           <th>Nivel</th>
-          <th>Nombre</th>
+          <th>Nombre / URL</th>
           <th style="text-align:right;">Acciones</th>
         </tr>
       </thead>
       <tbody>`;
 
     results.forEach((r, i) => {
+      const displayName = r.type === 'utm' ? (r.url || r.name) : r.name;
+      const safeName = displayName.replace(/'/g, "\\'").replace(/"/g, '&quot;');
       html += `<tr>
         <td style="color:var(--muted);font-size:12px;">${i + 1}</td>
         <td><span class="td-level ${r.type}">${levelLabel[r.type]}</span></td>
-        <td class="td-name">${r.name}</td>
+        <td class="td-name" style="word-break:break-all;">${displayName}</td>
         <td style="text-align:right;">
           <div style="display:flex;gap:6px;justify-content:flex-end;">
-            <button class="btn-copy" onclick="copyRaw('${r.name.replace(/'/g, "\\'")}', this)">Copiar</button>
+            <button class="btn-copy" onclick="copyRaw('${safeName}', this)">Copiar</button>
             <button class="btn-copy" style="color:var(--accent2);border-color:var(--accent2);" onclick="deleteRow(${i})">✕</button>
           </div>
         </td>
@@ -882,9 +1012,14 @@
   function exportCSV() {
     if (results.length === 0) { toast('Agrega nombres primero'); return; }
 
-    const header = 'Nivel,Nombre';
-    const levelLabel = { campaign: 'Campaña', adset: 'Ad Set', ad: 'Anuncio' };
-    const rows = results.map(r => `"${levelLabel[r.type]}","${r.name}"`);
+    const header = 'Nivel,Nombre,URL Completa';
+    const levelLabel = { campaign: 'Campaña', adset: 'Ad Set', ad: 'Anuncio', utm: 'UTM URL' };
+    const rows = results.map(r => {
+      if (r.type === 'utm') {
+        return `"${levelLabel[r.type]}","${r.name}","${r.url || ''}"`;
+      }
+      return `"${levelLabel[r.type]}","${r.name}",""`;
+    });
     const csv = [header, ...rows].join('\n');
 
     const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
@@ -929,7 +1064,7 @@
 
   // ─── TABS ────────────────────────────────────────────
   function switchTab(tab, btn) {
-    ['campaign', 'adset', 'ad'].forEach(t => {
+    ['campaign', 'adset', 'ad', 'utm'].forEach(t => {
       document.getElementById('panel-' + t).style.display = 'none';
     });
     document.getElementById('panel-' + tab).style.display = 'block';
@@ -938,6 +1073,124 @@
       t.className = 'tab';
     });
     btn.className = 'tab active-' + tab;
+  }
+
+  // ─── UTM ─────────────────────────────────────────────
+  function buildUtmUrl() {
+    const base = document.getElementById('utm-url').value.trim();
+    const source  = chipState['chips-utm-source'];
+    const medium  = chipState['chips-utm-medium'];
+    const campaign = document.getElementById('utm-campaign').value.trim();
+    const content  = document.getElementById('utm-content').value.trim();
+    const term     = document.getElementById('utm-term').value.trim();
+
+    if (!base) return null;
+
+    const params = new URLSearchParams();
+    if (source)   params.set('utm_source', source);
+    if (medium)   params.set('utm_medium', medium);
+    if (campaign) params.set('utm_campaign', campaign);
+    if (content)  params.set('utm_content', content);
+    if (term)     params.set('utm_term', term);
+
+    const qs = params.toString();
+    return qs ? base + (base.includes('?') ? '&' : '?') + qs : base;
+  }
+
+  function buildUtmLabel() {
+    const source  = chipState['chips-utm-source'] || '';
+    const medium  = chipState['chips-utm-medium'] || '';
+    const campaign = document.getElementById('utm-campaign').value.trim();
+    return [source, medium, campaign].filter(Boolean).join('_') || 'utm';
+  }
+
+  function updateUtmPreview() {
+    const url = buildUtmUrl();
+    const preview = document.getElementById('utm-url-preview');
+    const breakdown = document.getElementById('utm-breakdown');
+
+    if (!url) {
+      preview.className = 'utm-url-box empty';
+      preview.textContent = 'Completa los campos →';
+      breakdown.innerHTML = '<div style="color:var(--muted);font-size:13px;">Completa los campos para ver el desglose.</div>';
+      return;
+    }
+
+    // Colorized preview
+    const qIdx = url.indexOf('?');
+    if (qIdx === -1) {
+      preview.className = 'utm-url-box';
+      preview.innerHTML = `<span class="utm-base">${url}</span>`;
+    } else {
+      const base = url.slice(0, qIdx);
+      const qs = url.slice(qIdx + 1);
+      const colorized = qs.split('&').map(p => {
+        const [k, v] = p.split('=');
+        return `<span class="utm-param">${k}</span>=<span class="utm-val">${decodeURIComponent(v)}</span>`;
+      }).join('<span style="color:var(--muted)">&amp;</span>');
+      preview.className = 'utm-url-box';
+      preview.innerHTML = `<span class="utm-base">${base}?</span>${colorized}`;
+    }
+
+    // Breakdown table
+    const paramDefs = [
+      { key: 'utm_source', val: chipState['chips-utm-source'], desc: 'Plataforma de origen' },
+      { key: 'utm_medium', val: chipState['chips-utm-medium'], desc: 'Tipo de tráfico' },
+      { key: 'utm_campaign', val: document.getElementById('utm-campaign').value.trim(), desc: 'Nombre de campaña' },
+      { key: 'utm_content', val: document.getElementById('utm-content').value.trim(), desc: 'Nombre del anuncio' },
+      { key: 'utm_term', val: document.getElementById('utm-term').value.trim(), desc: 'Audiencia / palabra clave' },
+    ];
+
+    breakdown.innerHTML = paramDefs.map(p => {
+      if (!p.val) return `<div style="display:flex;justify-content:space-between;font-size:12px;padding:6px 0;border-bottom:1px solid var(--border);"><span style="color:var(--muted);">${p.key}</span><span style="color:var(--border);font-style:italic;">—</span></div>`;
+      return `<div style="display:flex;justify-content:space-between;align-items:baseline;gap:12px;font-size:12px;padding:6px 0;border-bottom:1px solid var(--border);">
+        <span style="color:var(--utm);font-family:'Space Mono',monospace;">${p.key}</span>
+        <span style="color:var(--text);font-family:'Space Mono',monospace;text-align:right;">${p.val}</span>
+      </div>`;
+    }).join('');
+  }
+
+  function autofillUtmCampaign() {
+    const name = buildCampaignName();
+    if (name) {
+      document.getElementById('utm-campaign').value = name.toLowerCase();
+      updateUtmPreview();
+      toast('Nombre de campaña cargado');
+    } else {
+      toast('Primero completa el panel de Campaña');
+    }
+  }
+
+  function autofillUtmContent() {
+    const name = buildAdName();
+    if (name) {
+      document.getElementById('utm-content').value = name.toLowerCase();
+      updateUtmPreview();
+      toast('Nombre de anuncio cargado');
+    } else {
+      toast('Primero completa el panel de Anuncio');
+    }
+  }
+
+  function copyUtmUrl(btn) {
+    const url = buildUtmUrl();
+    if (!url) { toast('Completa al menos la URL de destino'); return; }
+    copyRaw(url, btn);
+  }
+
+  function openUtmUrl() {
+    const url = buildUtmUrl();
+    if (!url) { toast('Completa al menos la URL de destino'); return; }
+    window.open(url, '_blank');
+  }
+
+  function addUtmToResults() {
+    const url = buildUtmUrl();
+    if (!url) { toast('Completa al menos la URL de destino'); return; }
+    const label = buildUtmLabel();
+    results.push({ type: 'utm', name: label, url });
+    renderResults();
+    toast('URL UTM agregada a la lista');
   }
 
   // ─── INIT ────────────────────────────────────────────
