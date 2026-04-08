@@ -1,0 +1,954 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Naming Tool — Meta Ads</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --bg: #0D0D0B;
+      --surface: #141412;
+      --surface2: #1C1C19;
+      --border: #2A2A26;
+      --accent: #F0C93A;
+      --accent2: #E8583A;
+      --green: #5CBA8A;
+      --text: #F5F5F0;
+      --muted: #7A7A72;
+      --campaign: #7B61FF;
+      --adset: #E8583A;
+      --ad: #5CBA8A;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Space Grotesk', sans-serif;
+      min-height: 100vh;
+    }
+
+    .font-display { font-family: 'Bebas Neue', sans-serif; letter-spacing: 0.05em; }
+    .mono { font-family: 'Space Mono', monospace; }
+
+    /* ─── HEADER ─── */
+    header {
+      border-bottom: 1px solid var(--border);
+      padding: 20px 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      background: var(--bg);
+      z-index: 100;
+    }
+    .logo { display: flex; align-items: center; gap: 10px; }
+    .logo-dot { width: 10px; height: 10px; background: var(--accent); border-radius: 50%; }
+    .logo h1 { font-size: 18px; font-weight: 600; }
+    .logo span { color: var(--muted); font-size: 13px; }
+
+    .badge {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 4px 12px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    /* ─── LAYOUT ─── */
+    .container { max-width: 1200px; margin: 0 auto; padding: 32px; }
+
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+
+    @media (max-width: 900px) {
+      .grid-2 { grid-template-columns: 1fr; }
+      .grid-3 { grid-template-columns: 1fr 1fr; }
+    }
+
+    /* ─── SECTION TITLES ─── */
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    .section-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .section-title { font-size: 13px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+    .section-num { font-family: 'Bebas Neue', sans-serif; font-size: 28px; letter-spacing: 0.05em; }
+
+    /* ─── CARDS ─── */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px;
+    }
+    .card-level {
+      border-top: 3px solid transparent;
+    }
+    .card-level.campaign { border-top-color: var(--campaign); }
+    .card-level.adset { border-top-color: var(--adset); }
+    .card-level.ad { border-top-color: var(--ad); }
+
+    /* ─── FORM ELEMENTS ─── */
+    label {
+      display: block;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    input[type="text"],
+    input[type="date"],
+    select {
+      width: 100%;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 12px;
+      color: var(--text);
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 14px;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+    input[type="text"]:focus,
+    input[type="date"]:focus,
+    select:focus { border-color: var(--accent); }
+    select option { background: #1C1C19; }
+
+    .field { margin-bottom: 14px; }
+
+    /* ─── PREVIEW BOX ─── */
+    .preview-wrap {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .preview-name {
+      font-family: 'Space Mono', monospace;
+      font-size: 13px;
+      color: var(--text);
+      word-break: break-all;
+      flex: 1;
+    }
+    .preview-empty { color: var(--muted); font-style: italic; }
+
+    .btn-copy {
+      background: none;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 6px 12px;
+      color: var(--muted);
+      font-size: 11px;
+      font-family: 'Space Grotesk', sans-serif;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.15s;
+    }
+    .btn-copy:hover { border-color: var(--accent); color: var(--accent); }
+    .btn-copy.copied { border-color: var(--green); color: var(--green); }
+
+    /* ─── CHIP SELECTOR ─── */
+    .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px; }
+    .chip {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 5px 12px;
+      font-size: 12px;
+      cursor: pointer;
+      user-select: none;
+      transition: all 0.15s;
+      color: var(--muted);
+    }
+    .chip:hover { border-color: var(--accent); color: var(--text); }
+    .chip.selected { border-color: var(--accent); background: rgba(240,201,58,0.1); color: var(--accent); }
+
+    /* ─── NAMING STRUCTURE LEGEND ─── */
+    .formula {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      align-items: center;
+      font-family: 'Space Mono', monospace;
+      font-size: 11px;
+    }
+    .formula-part {
+      padding: 3px 8px;
+      border-radius: 4px;
+      border: 1px solid;
+      font-weight: 700;
+    }
+    .sep { color: var(--muted); }
+
+    /* ─── RESULTS TABLE ─── */
+    .results-card {
+      margin-top: 32px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    .results-header {
+      padding: 20px 24px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .results-title { font-size: 14px; font-weight: 600; }
+    .results-count {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 2px 10px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    thead th {
+      padding: 12px 16px;
+      text-align: left;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--muted);
+      background: var(--surface2);
+      border-bottom: 1px solid var(--border);
+    }
+    tbody tr {
+      border-bottom: 1px solid var(--border);
+      transition: background 0.1s;
+    }
+    tbody tr:last-child { border-bottom: none; }
+    tbody tr:hover { background: var(--surface2); }
+    tbody td {
+      padding: 12px 16px;
+      font-size: 13px;
+    }
+    .td-level {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      padding: 3px 8px;
+      border-radius: 4px;
+    }
+    .td-level.campaign { background: rgba(123,97,255,0.15); color: var(--campaign); }
+    .td-level.adset { background: rgba(232,88,58,0.15); color: var(--adset); }
+    .td-level.ad { background: rgba(92,186,138,0.15); color: var(--ad); }
+    .td-name { font-family: 'Space Mono', monospace; font-size: 12px; }
+
+    /* ─── BUTTONS ─── */
+    .btn-row { display: flex; gap: 12px; flex-wrap: wrap; }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: all 0.15s;
+    }
+    .btn-primary { background: var(--accent); color: #000; }
+    .btn-primary:hover { background: #f5d55a; }
+    .btn-outline { background: none; border: 1px solid var(--border); color: var(--text); }
+    .btn-outline:hover { border-color: var(--accent); color: var(--accent); }
+    .btn-green { background: var(--green); color: #000; }
+    .btn-green:hover { background: #72d9a2; }
+    .btn-danger { background: none; border: 1px solid var(--border); color: var(--muted); }
+    .btn-danger:hover { border-color: var(--accent2); color: var(--accent2); }
+
+    /* ─── TABS ─── */
+    .tabs { display: flex; gap: 4px; margin-bottom: 24px; }
+    .tab {
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      border: 1px solid transparent;
+      color: var(--muted);
+      background: none;
+      transition: all 0.15s;
+    }
+    .tab:hover { color: var(--text); }
+    .tab.active-campaign { background: rgba(123,97,255,0.15); border-color: var(--campaign); color: var(--campaign); }
+    .tab.active-adset { background: rgba(232,88,58,0.15); border-color: var(--adset); color: var(--adset); }
+    .tab.active-ad { background: rgba(92,186,138,0.15); border-color: var(--ad); color: var(--ad); }
+
+    /* ─── TOAST ─── */
+    #toast {
+      position: fixed;
+      bottom: 28px;
+      right: 28px;
+      background: var(--green);
+      color: #000;
+      padding: 12px 20px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 600;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: all 0.25s;
+      pointer-events: none;
+      z-index: 999;
+    }
+    #toast.show { opacity: 1; transform: translateY(0); }
+
+    .divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 28px 0;
+    }
+
+    .help-text { font-size: 12px; color: var(--muted); margin-top: 4px; }
+
+    /* empty state */
+    .empty-state {
+      padding: 40px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="logo">
+    <div class="logo-dot"></div>
+    <div>
+      <h1>Meta Ads Naming Tool</h1>
+      <div style="color:var(--muted);font-size:12px;margin-top:1px;">Generador de nombres · Campañas / Ad Sets / Anuncios</div>
+    </div>
+  </div>
+  <div class="badge">v1.0</div>
+</header>
+
+<div class="container">
+
+  <!-- FÓRMULA GUÍA -->
+  <div class="card" style="margin-bottom:28px;">
+    <div class="section-header" style="margin-bottom:14px;">
+      <div class="section-dot" style="background:var(--accent)"></div>
+      <div class="section-title">Estructura de naming</div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:14px;">
+      <div>
+        <div style="font-size:11px;color:var(--muted);margin-bottom:6px;font-weight:600;">CAMPAÑA</div>
+        <div class="formula">
+          <span class="formula-part" style="border-color:var(--campaign);color:var(--campaign);">OBJETIVO</span>
+          <span class="sep">_</span>
+          <span class="formula-part" style="border-color:var(--campaign);color:var(--campaign);">PRODUCTO</span>
+          <span class="sep">_</span>
+          <span class="formula-part" style="border-color:var(--campaign);color:var(--campaign);">MERCADO</span>
+          <span class="sep">_</span>
+          <span class="formula-part" style="border-color:var(--campaign);color:var(--campaign);">FECHA</span>
+          <span class="sep">_</span>
+          <span class="formula-part" style="border-color:var(--campaign);color:var(--campaign);">ESTRATEGIA</span>
+        </div>
+      </div>
+      <div>
+        <div style="font-size:11px;color:var(--muted);margin-bottom:6px;font-weight:600;">AD SET</div>
+        <div class="formula">
+          <span class="formula-part" style="border-color:var(--adset);color:var(--adset);">AUDIENCIA</span>
+          <span class="sep">_</span>
+          <span class="formula-part" style="border-color:var(--adset);color:var(--adset);">EDAD</span>
+          <span class="sep">_</span>
+          <span class="formula-part" style="border-color:var(--adset);color:var(--adset);">GÉNERO</span>
+          <span class="sep">_</span>
+          <span class="formula-part" style="border-color:var(--adset);color:var(--adset);">UBICACIÓN</span>
+          <span class="sep">_</span>
+          <span class="formula-part" style="border-color:var(--adset);color:var(--adset);">FECHA</span>
+        </div>
+      </div>
+      <div>
+        <div style="font-size:11px;color:var(--muted);margin-bottom:6px;font-weight:600;">ANUNCIO</div>
+        <div class="formula">
+          <span class="formula-part" style="border-color:var(--ad);color:var(--ad);">FORMATO</span>
+          <span class="sep">_</span>
+          <span class="formula-part" style="border-color:var(--ad);color:var(--ad);">CREATIVIDAD</span>
+          <span class="sep">_</span>
+          <span class="formula-part" style="border-color:var(--ad);color:var(--ad);">COPY</span>
+          <span class="sep">_</span>
+          <span class="formula-part" style="border-color:var(--ad);color:var(--ad);">VERSIÓN</span>
+          <span class="sep">_</span>
+          <span class="formula-part" style="border-color:var(--ad);color:var(--ad);">FECHA</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TABS -->
+  <div class="tabs">
+    <button class="tab active-campaign" onclick="switchTab('campaign', this)">01 — Campaña</button>
+    <button class="tab" onclick="switchTab('adset', this)">02 — Ad Set</button>
+    <button class="tab" onclick="switchTab('ad', this)">03 — Anuncio</button>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       PANEL CAMPAÑA
+  ══════════════════════════════════════ -->
+  <div id="panel-campaign">
+    <div class="grid-2">
+      <div class="card card-level campaign">
+        <div class="section-header">
+          <div class="section-dot" style="background:var(--campaign)"></div>
+          <div class="section-title">Datos de campaña</div>
+        </div>
+
+        <div class="field">
+          <label>Objetivo</label>
+          <div class="chips" id="chips-objetivo">
+            <span class="chip" data-val="CONV">CONV — Conversiones</span>
+            <span class="chip" data-val="GEN">GEN — Generación de leads</span>
+            <span class="chip" data-val="TRAF">TRAF — Tráfico</span>
+            <span class="chip" data-val="CONC">CONC — Conocimiento</span>
+            <span class="chip" data-val="INT">INT — Interacción</span>
+            <span class="chip" data-val="VTA">VTA — Ventas del catálogo</span>
+            <span class="chip" data-val="VIDEO">VIDEO — Vistas de video</span>
+            <span class="chip" data-val="APP">APP — Instalaciones de app</span>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Producto / Servicio</label>
+          <input type="text" id="c-producto" placeholder="Ej: QuintoApp, CreditoPersonal, SeguroAuto" oninput="updatePreviews()" />
+        </div>
+
+        <div class="field">
+          <label>Mercado / País</label>
+          <div class="chips" id="chips-mercado">
+            <span class="chip" data-val="MX">MX</span>
+            <span class="chip" data-val="CO">CO</span>
+            <span class="chip" data-val="AR">AR</span>
+            <span class="chip" data-val="ES">ES</span>
+            <span class="chip" data-val="US">US</span>
+            <span class="chip" data-val="LATAM">LATAM</span>
+            <span class="chip" data-val="GLOBAL">GLOBAL</span>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Mes / Año</label>
+          <input type="month" id="c-fecha" oninput="updatePreviews()" />
+        </div>
+
+        <div class="field">
+          <label>Estrategia de presupuesto</label>
+          <div class="chips" id="chips-estrategia">
+            <span class="chip" data-val="CBO">CBO — Campaign Budget</span>
+            <span class="chip" data-val="ABO">ABO — Ad Set Budget</span>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="card" style="margin-bottom:16px;">
+          <div class="section-header">
+            <div class="section-dot" style="background:var(--campaign)"></div>
+            <div class="section-title">Nombre generado</div>
+          </div>
+          <div class="preview-wrap">
+            <div class="preview-name mono" id="preview-campaign"><span class="preview-empty">Completa los campos →</span></div>
+            <button class="btn-copy" onclick="copyName('preview-campaign', this)">Copiar</button>
+          </div>
+          <p class="help-text" style="margin-top:10px;">Los espacios se reemplazan por guiones bajos automáticamente.</p>
+        </div>
+
+        <div class="card">
+          <div class="section-header">
+            <div class="section-dot" style="background:var(--accent)"></div>
+            <div class="section-title">Sufijo personalizado (opcional)</div>
+          </div>
+          <div class="field">
+            <label>Etiqueta extra</label>
+            <input type="text" id="c-sufijo" placeholder="Ej: REMARKETING, FRIO, TEST" oninput="updatePreviews()" />
+          </div>
+          <div class="btn-row">
+            <button class="btn btn-primary" onclick="addToResults('campaign')">+ Agregar a la lista</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       PANEL AD SET
+  ══════════════════════════════════════ -->
+  <div id="panel-adset" style="display:none;">
+    <div class="grid-2">
+      <div class="card card-level adset">
+        <div class="section-header">
+          <div class="section-dot" style="background:var(--adset)"></div>
+          <div class="section-title">Datos del Ad Set</div>
+        </div>
+
+        <div class="field">
+          <label>Tipo de audiencia</label>
+          <div class="chips" id="chips-audiencia">
+            <span class="chip" data-val="INT">INT — Intereses</span>
+            <span class="chip" data-val="LOOK">LOOK — Lookalike</span>
+            <span class="chip" data-val="REM">REM — Remarketing</span>
+            <span class="chip" data-val="CUST">CUST — Custom Audience</span>
+            <span class="chip" data-val="BROAD">BROAD — Amplia</span>
+            <span class="chip" data-val="ADV+">ADV+ — Advantage+</span>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Segmento / Interés (opcional)</label>
+          <input type="text" id="as-segmento" placeholder="Ej: Finanzas, Emprendedores, Millennials" oninput="updatePreviews()" />
+        </div>
+
+        <div class="field">
+          <label>Rango de edad</label>
+          <div class="chips" id="chips-edad">
+            <span class="chip" data-val="18-24">18-24</span>
+            <span class="chip" data-val="25-34">25-34</span>
+            <span class="chip" data-val="35-44">35-44</span>
+            <span class="chip" data-val="45-54">45-54</span>
+            <span class="chip" data-val="55+">55+</span>
+            <span class="chip" data-val="ALL">ALL</span>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Género</label>
+          <div class="chips" id="chips-genero">
+            <span class="chip" data-val="M">M — Masculino</span>
+            <span class="chip" data-val="F">F — Femenino</span>
+            <span class="chip" data-val="ALL">ALL — Todos</span>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Ubicación / Placement</label>
+          <div class="chips" id="chips-placement">
+            <span class="chip" data-val="FEED">FEED</span>
+            <span class="chip" data-val="STORY">STORY</span>
+            <span class="chip" data-val="REEL">REEL</span>
+            <span class="chip" data-val="SEARCH">SEARCH</span>
+            <span class="chip" data-val="AUTO">AUTO</span>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Mes / Año</label>
+          <input type="month" id="as-fecha" oninput="updatePreviews()" />
+        </div>
+      </div>
+
+      <div>
+        <div class="card" style="margin-bottom:16px;">
+          <div class="section-header">
+            <div class="section-dot" style="background:var(--adset)"></div>
+            <div class="section-title">Nombre generado</div>
+          </div>
+          <div class="preview-wrap">
+            <div class="preview-name mono" id="preview-adset"><span class="preview-empty">Completa los campos →</span></div>
+            <button class="btn-copy" onclick="copyName('preview-adset', this)">Copiar</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="section-header">
+            <div class="section-dot" style="background:var(--accent)"></div>
+            <div class="section-title">Sufijo personalizado (opcional)</div>
+          </div>
+          <div class="field">
+            <label>Etiqueta extra</label>
+            <input type="text" id="as-sufijo" placeholder="Ej: LAL1, LAL3, TEST_A" oninput="updatePreviews()" />
+          </div>
+          <div class="btn-row">
+            <button class="btn btn-primary" onclick="addToResults('adset')">+ Agregar a la lista</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       PANEL ANUNCIO
+  ══════════════════════════════════════ -->
+  <div id="panel-ad" style="display:none;">
+    <div class="grid-2">
+      <div class="card card-level ad">
+        <div class="section-header">
+          <div class="section-dot" style="background:var(--ad)"></div>
+          <div class="section-title">Datos del Anuncio</div>
+        </div>
+
+        <div class="field">
+          <label>Formato</label>
+          <div class="chips" id="chips-formato">
+            <span class="chip" data-val="VID">VID — Video</span>
+            <span class="chip" data-val="IMG">IMG — Imagen estática</span>
+            <span class="chip" data-val="CAR">CAR — Carrusel</span>
+            <span class="chip" data-val="COL">COL — Colección</span>
+            <span class="chip" data-val="GIF">GIF — GIF animado</span>
+            <span class="chip" data-val="DPA">DPA — Dynamic Product</span>
+            <span class="chip" data-val="STORY">STORY — Historia</span>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Tipo de creatividad</label>
+          <div class="chips" id="chips-creatividad">
+            <span class="chip" data-val="TEST">Testimonio</span>
+            <span class="chip" data-val="UGC">UGC</span>
+            <span class="chip" data-val="DEMO">Demo</span>
+            <span class="chip" data-val="MARCA">Branding</span>
+            <span class="chip" data-val="PROMO">Promocional</span>
+            <span class="chip" data-val="EDU">Educativo</span>
+            <span class="chip" data-val="MEME">Meme</span>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Ángulo / Propuesta de copy</label>
+          <input type="text" id="ad-copy" placeholder="Ej: Ahorra50, PrimerMes, SinComision" oninput="updatePreviews()" />
+        </div>
+
+        <div class="field">
+          <label>Versión</label>
+          <div class="chips" id="chips-version">
+            <span class="chip" data-val="V1">V1</span>
+            <span class="chip" data-val="V2">V2</span>
+            <span class="chip" data-val="V3">V3</span>
+            <span class="chip" data-val="A">A</span>
+            <span class="chip" data-val="B">B</span>
+            <span class="chip" data-val="C">C</span>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Mes / Año</label>
+          <input type="month" id="ad-fecha" oninput="updatePreviews()" />
+        </div>
+      </div>
+
+      <div>
+        <div class="card" style="margin-bottom:16px;">
+          <div class="section-header">
+            <div class="section-dot" style="background:var(--ad)"></div>
+            <div class="section-title">Nombre generado</div>
+          </div>
+          <div class="preview-wrap">
+            <div class="preview-name mono" id="preview-ad"><span class="preview-empty">Completa los campos →</span></div>
+            <button class="btn-copy" onclick="copyName('preview-ad', this)">Copiar</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="section-header">
+            <div class="section-dot" style="background:var(--accent)"></div>
+            <div class="section-title">Sufijo personalizado (opcional)</div>
+          </div>
+          <div class="field">
+            <label>Etiqueta extra</label>
+            <input type="text" id="ad-sufijo" placeholder="Ej: HOOK2, THUMB3" oninput="updatePreviews()" />
+          </div>
+          <div class="btn-row">
+            <button class="btn btn-primary" onclick="addToResults('ad')">+ Agregar a la lista</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       RESULTS TABLE
+  ══════════════════════════════════════ -->
+  <div class="results-card">
+    <div class="results-header">
+      <div>
+        <div class="results-title">Lista de nombres</div>
+        <div class="help-text" style="margin-top:2px;">Agrega nombres desde los tres paneles y exporta el CSV.</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px;">
+        <span class="results-count" id="results-count">0 nombres</span>
+        <div class="btn-row">
+          <button class="btn btn-green" onclick="exportCSV()">↓ Exportar CSV</button>
+          <button class="btn btn-danger" onclick="clearResults()">Limpiar todo</button>
+        </div>
+      </div>
+    </div>
+    <div id="results-body">
+      <div class="empty-state">Aún no hay nombres. Completa los paneles y presiona "Agregar a la lista".</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- TOAST -->
+<div id="toast">✓ Copiado al portapapeles</div>
+
+<script>
+  // ─── STATE ───────────────────────────────────────────
+  const chipState = {};
+  const results = [];
+
+  // ─── CHIPS ───────────────────────────────────────────
+  document.querySelectorAll('.chips').forEach(group => {
+    const id = group.id;
+    chipState[id] = null;
+    group.querySelectorAll('.chip').forEach(chip => {
+      chip.addEventListener('click', () => {
+        // single-select per group
+        group.querySelectorAll('.chip').forEach(c => c.classList.remove('selected'));
+        if (chipState[id] === chip.dataset.val) {
+          chipState[id] = null;
+        } else {
+          chip.classList.add('selected');
+          chipState[id] = chip.dataset.val;
+        }
+        updatePreviews();
+      });
+    });
+  });
+
+  // ─── FORMAT DATE ─────────────────────────────────────
+  function fmtDate(monthInput) {
+    if (!monthInput) return null;
+    const [year, month] = monthInput.split('-');
+    return month + year.slice(2);
+  }
+
+  // ─── CLEAN TEXT ──────────────────────────────────────
+  function clean(str) {
+    return str.trim().replace(/\s+/g, '_').toUpperCase();
+  }
+
+  // ─── BUILD NAMES ─────────────────────────────────────
+  function buildCampaignName() {
+    const parts = [
+      chipState['chips-objetivo'],
+      clean(document.getElementById('c-producto').value),
+      chipState['chips-mercado'],
+      fmtDate(document.getElementById('c-fecha').value),
+      chipState['chips-estrategia'],
+    ].filter(Boolean);
+    const sufijo = clean(document.getElementById('c-sufijo').value);
+    if (sufijo) parts.push(sufijo);
+    return parts.join('_');
+  }
+
+  function buildAdsetName() {
+    const parts = [
+      chipState['chips-audiencia'],
+      clean(document.getElementById('as-segmento').value),
+      chipState['chips-edad'],
+      chipState['chips-genero'],
+      chipState['chips-placement'],
+      fmtDate(document.getElementById('as-fecha').value),
+    ].filter(Boolean);
+    const sufijo = clean(document.getElementById('as-sufijo').value);
+    if (sufijo) parts.push(sufijo);
+    return parts.join('_');
+  }
+
+  function buildAdName() {
+    const parts = [
+      chipState['chips-formato'],
+      chipState['chips-creatividad'],
+      clean(document.getElementById('ad-copy').value),
+      chipState['chips-version'],
+      fmtDate(document.getElementById('ad-fecha').value),
+    ].filter(Boolean);
+    const sufijo = clean(document.getElementById('ad-sufijo').value);
+    if (sufijo) parts.push(sufijo);
+    return parts.join('_');
+  }
+
+  // ─── UPDATE PREVIEWS ─────────────────────────────────
+  function updatePreviews() {
+    const cn = buildCampaignName();
+    const an = buildAdsetName();
+    const dn = buildAdName();
+
+    setPreview('preview-campaign', cn);
+    setPreview('preview-adset', an);
+    setPreview('preview-ad', dn);
+  }
+
+  function setPreview(id, name) {
+    const el = document.getElementById(id);
+    if (name) {
+      el.innerHTML = name;
+    } else {
+      el.innerHTML = '<span class="preview-empty">Completa los campos →</span>';
+    }
+  }
+
+  // ─── ADD TO RESULTS ──────────────────────────────────
+  function addToResults(type) {
+    let name;
+    if (type === 'campaign') name = buildCampaignName();
+    else if (type === 'adset') name = buildAdsetName();
+    else name = buildAdName();
+
+    if (!name) { toast('Completa al menos un campo'); return; }
+
+    results.push({ type, name });
+    renderResults();
+    toast('Nombre agregado a la lista');
+  }
+
+  // ─── RENDER RESULTS ──────────────────────────────────
+  function renderResults() {
+    const body = document.getElementById('results-body');
+    const count = document.getElementById('results-count');
+    count.textContent = results.length + ' nombre' + (results.length !== 1 ? 's' : '');
+
+    if (results.length === 0) {
+      body.innerHTML = '<div class="empty-state">Aún no hay nombres.</div>';
+      return;
+    }
+
+    const levelLabel = { campaign: 'Campaña', adset: 'Ad Set', ad: 'Anuncio' };
+
+    let html = `<table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Nivel</th>
+          <th>Nombre</th>
+          <th style="text-align:right;">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>`;
+
+    results.forEach((r, i) => {
+      html += `<tr>
+        <td style="color:var(--muted);font-size:12px;">${i + 1}</td>
+        <td><span class="td-level ${r.type}">${levelLabel[r.type]}</span></td>
+        <td class="td-name">${r.name}</td>
+        <td style="text-align:right;">
+          <div style="display:flex;gap:6px;justify-content:flex-end;">
+            <button class="btn-copy" onclick="copyRaw('${r.name.replace(/'/g, "\\'")}', this)">Copiar</button>
+            <button class="btn-copy" style="color:var(--accent2);border-color:var(--accent2);" onclick="deleteRow(${i})">✕</button>
+          </div>
+        </td>
+      </tr>`;
+    });
+
+    html += '</tbody></table>';
+    body.innerHTML = html;
+  }
+
+  function deleteRow(i) {
+    results.splice(i, 1);
+    renderResults();
+  }
+
+  function clearResults() {
+    if (results.length === 0) return;
+    if (confirm('¿Borrar todos los nombres?')) {
+      results.length = 0;
+      renderResults();
+    }
+  }
+
+  // ─── EXPORT CSV ──────────────────────────────────────
+  function exportCSV() {
+    if (results.length === 0) { toast('Agrega nombres primero'); return; }
+
+    const header = 'Nivel,Nombre';
+    const levelLabel = { campaign: 'Campaña', adset: 'Ad Set', ad: 'Anuncio' };
+    const rows = results.map(r => `"${levelLabel[r.type]}","${r.name}"`);
+    const csv = [header, ...rows].join('\n');
+
+    const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'meta-ads-naming_' + new Date().toISOString().slice(0, 10) + '.csv';
+    a.click();
+    URL.revokeObjectURL(url);
+    toast('CSV exportado');
+  }
+
+  // ─── COPY ────────────────────────────────────────────
+  function copyName(previewId, btn) {
+    const el = document.getElementById(previewId);
+    const text = el.innerText;
+    if (!text || el.querySelector('.preview-empty')) { toast('Nada que copiar'); return; }
+    copyRaw(text, btn);
+  }
+
+  function copyRaw(text, btn) {
+    navigator.clipboard.writeText(text).then(() => {
+      if (btn) {
+        const orig = btn.textContent;
+        btn.textContent = '✓ Copiado';
+        btn.classList.add('copied');
+        setTimeout(() => { btn.textContent = orig; btn.classList.remove('copied'); }, 1500);
+      }
+      toast('Copiado al portapapeles');
+    });
+  }
+
+  // ─── TOAST ───────────────────────────────────────────
+  let toastTimer;
+  function toast(msg) {
+    const el = document.getElementById('toast');
+    el.textContent = msg;
+    el.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => el.classList.remove('show'), 2000);
+  }
+
+  // ─── TABS ────────────────────────────────────────────
+  function switchTab(tab, btn) {
+    ['campaign', 'adset', 'ad'].forEach(t => {
+      document.getElementById('panel-' + t).style.display = 'none';
+    });
+    document.getElementById('panel-' + tab).style.display = 'block';
+
+    document.querySelectorAll('.tab').forEach(t => {
+      t.className = 'tab';
+    });
+    btn.className = 'tab active-' + tab;
+  }
+
+  // ─── INIT ────────────────────────────────────────────
+  // Set current month as default
+  const today = new Date();
+  const yy = today.getFullYear();
+  const mm = String(today.getMonth() + 1).padStart(2, '0');
+  const monthVal = `${yy}-${mm}`;
+  document.getElementById('c-fecha').value = monthVal;
+  document.getElementById('as-fecha').value = monthVal;
+  document.getElementById('ad-fecha').value = monthVal;
+</script>
+</body>
+</html>
