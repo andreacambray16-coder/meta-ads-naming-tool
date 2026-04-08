@@ -865,6 +865,7 @@
         }
         if (isUtm) updateUtmPreview();
         else updatePreviews();
+        saveState();
       });
     });
   });
@@ -954,6 +955,7 @@
 
     results.push({ type, name });
     renderResults();
+    saveState();
     toast('Nombre agregado a la lista');
   }
 
@@ -1004,6 +1006,7 @@
   function deleteRow(i) {
     results.splice(i, 1);
     renderResults();
+    saveState();
   }
 
   function clearResults() {
@@ -1011,6 +1014,7 @@
     if (confirm('¿Borrar todos los nombres?')) {
       results.length = 0;
       renderResults();
+      saveState();
     }
   }
 
@@ -1196,18 +1200,84 @@
     const label = buildUtmLabel();
     results.push({ type: 'utm', name: label, url });
     renderResults();
+    saveState();
     toast('URL UTM agregada a la lista');
   }
 
+  // ─── PERSIST (localStorage) ──────────────────────────
+  const INPUT_IDS = [
+    'c-producto','c-ciudad','c-fecha','c-sufijo',
+    'as-segmento','as-fecha','as-sufijo',
+    'ad-copy','ad-fecha','ad-sufijo',
+    'utm-url','utm-campaign','utm-content','utm-term'
+  ];
+
+  function saveState() {
+    const inputs = {};
+    INPUT_IDS.forEach(id => {
+      const el = document.getElementById(id);
+      if (el) inputs[id] = el.value;
+    });
+    localStorage.setItem('naming_inputs', JSON.stringify(inputs));
+    localStorage.setItem('naming_chips', JSON.stringify(chipState));
+    localStorage.setItem('naming_results', JSON.stringify(results));
+  }
+
+  function loadState() {
+    // inputs
+    try {
+      const inputs = JSON.parse(localStorage.getItem('naming_inputs') || '{}');
+      INPUT_IDS.forEach(id => {
+        const el = document.getElementById(id);
+        if (el && inputs[id] !== undefined) el.value = inputs[id];
+      });
+    } catch(e) {}
+
+    // chips
+    try {
+      const saved = JSON.parse(localStorage.getItem('naming_chips') || '{}');
+      Object.keys(saved).forEach(groupId => {
+        const val = saved[groupId];
+        if (!val) return;
+        chipState[groupId] = val;
+        const group = document.getElementById(groupId);
+        if (!group) return;
+        group.querySelectorAll('.chip').forEach(c => {
+          if (c.dataset.val === val) c.classList.add('selected');
+        });
+      });
+    } catch(e) {}
+
+    // results
+    try {
+      const saved = JSON.parse(localStorage.getItem('naming_results') || '[]');
+      saved.forEach(r => results.push(r));
+      if (results.length > 0) renderResults();
+    } catch(e) {}
+  }
+
   // ─── INIT ────────────────────────────────────────────
-  // Set current month as default
   const today = new Date();
   const yy = today.getFullYear();
   const mm = String(today.getMonth() + 1).padStart(2, '0');
   const monthVal = `${yy}-${mm}`;
-  document.getElementById('c-fecha').value = monthVal;
-  document.getElementById('as-fecha').value = monthVal;
-  document.getElementById('ad-fecha').value = monthVal;
+
+  // Load saved state (overrides defaults where saved values exist)
+  loadState();
+
+  // Set month default only if not already loaded from storage
+  if (!document.getElementById('c-fecha').value)  document.getElementById('c-fecha').value  = monthVal;
+  if (!document.getElementById('as-fecha').value) document.getElementById('as-fecha').value = monthVal;
+  if (!document.getElementById('ad-fecha').value) document.getElementById('ad-fecha').value = monthVal;
+
+  // Auto-save on every input change
+  INPUT_IDS.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener('input', saveState);
+  });
+
+  updatePreviews();
+  updateUtmPreview();
 </script>
 </body>
 </html>
