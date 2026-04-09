@@ -4,30 +4,30 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Naming Tool — Meta Ads</title>
-  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
     :root {
-      --bg: #0D0D0B;
-      --surface: #141412;
-      --surface2: #1C1C19;
-      --border: #2A2A26;
-      --accent: #F0C93A;
-      --accent2: #E8583A;
-      --green: #5CBA8A;
-      --text: #F5F5F0;
-      --muted: #7A7A72;
-      --campaign: #7B61FF;
-      --adset: #E8583A;
-      --ad: #5CBA8A;
-      --utm: #00B8D9;
+      --bg: #0D1117;
+      --surface: #161B22;
+      --surface2: #21262D;
+      --border: #30363D;
+      --accent: #CAFF00;
+      --accent2: #FF7F50;
+      --green: #22C55E;
+      --text: #F0EDE4;
+      --muted: #8B949E;
+      --campaign: #7C3AED;
+      --adset: #FF7F50;
+      --ad: #22C55E;
+      --utm: #38BDF8;
     }
 
     body {
       background: var(--bg);
       color: var(--text);
-      font-family: 'Space Grotesk', sans-serif;
+      font-family: 'Plus Jakarta Sans', sans-serif;
       min-height: 100vh;
     }
 
@@ -47,17 +47,20 @@
       z-index: 100;
     }
     .logo { display: flex; align-items: center; gap: 10px; }
-    .logo-dot { width: 10px; height: 10px; background: var(--accent); border-radius: 50%; }
-    .logo h1 { font-size: 18px; font-weight: 600; }
-    .logo span { color: var(--muted); font-size: 13px; }
+    .logo-dot { width: 10px; height: 10px; background: var(--accent); border-radius: 2px; }
+    .logo h1 { font-size: 18px; font-weight: 700; font-family: 'Bebas Neue', sans-serif; letter-spacing: 0.08em; font-size: 22px; }
+    .logo span { color: var(--muted); font-size: 12px; font-family: 'Space Mono', monospace; letter-spacing: 0.04em; }
 
     .badge {
-      background: var(--surface2);
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      padding: 4px 12px;
-      font-size: 12px;
-      color: var(--muted);
+      background: var(--accent);
+      border: none;
+      border-radius: 2px;
+      padding: 3px 10px;
+      font-size: 11px;
+      font-weight: 700;
+      color: #0D1117;
+      font-family: 'Space Mono', monospace;
+      letter-spacing: 0.06em;
     }
 
     /* ─── LAYOUT ─── */
@@ -90,7 +93,7 @@
     .card {
       background: var(--surface);
       border: 1px solid var(--border);
-      border-radius: 12px;
+      border-radius: 6px;
       padding: 24px;
     }
     .card-level {
@@ -114,14 +117,15 @@
 
     input[type="text"],
     input[type="date"],
+    input[type="month"],
     select {
       width: 100%;
       background: var(--surface2);
       border: 1px solid var(--border);
-      border-radius: 8px;
+      border-radius: 4px;
       padding: 10px 12px;
       color: var(--text);
-      font-family: 'Space Grotesk', sans-serif;
+      font-family: 'Plus Jakarta Sans', sans-serif;
       font-size: 14px;
       outline: none;
       transition: border-color 0.15s;
@@ -137,7 +141,7 @@
     .preview-wrap {
       background: var(--surface2);
       border: 1px solid var(--border);
-      border-radius: 8px;
+      border-radius: 4px;
       padding: 14px 16px;
       display: flex;
       align-items: center;
@@ -156,14 +160,15 @@
     .btn-copy {
       background: none;
       border: 1px solid var(--border);
-      border-radius: 6px;
+      border-radius: 3px;
       padding: 6px 12px;
       color: var(--muted);
       font-size: 11px;
-      font-family: 'Space Grotesk', sans-serif;
+      font-family: 'Space Mono', monospace;
       cursor: pointer;
       white-space: nowrap;
       transition: all 0.15s;
+      letter-spacing: 0.04em;
     }
     .btn-copy:hover { border-color: var(--accent); color: var(--accent); }
     .btn-copy.copied { border-color: var(--green); color: var(--green); }
@@ -173,16 +178,18 @@
     .chip {
       background: var(--surface2);
       border: 1px solid var(--border);
-      border-radius: 6px;
+      border-radius: 3px;
       padding: 5px 12px;
       font-size: 12px;
+      font-family: 'Space Mono', monospace;
       cursor: pointer;
       user-select: none;
       transition: all 0.15s;
       color: var(--muted);
+      letter-spacing: 0.02em;
     }
     .chip:hover { border-color: var(--accent); color: var(--text); }
-    .chip.selected { border-color: var(--accent); background: rgba(240,201,58,0.1); color: var(--accent); }
+    .chip.selected { border-color: var(--accent); background: rgba(202,255,0,0.12); color: var(--accent); }
 
     /* ─── NAMING STRUCTURE LEGEND ─── */
     .formula {
@@ -206,7 +213,7 @@
       margin-top: 32px;
       background: var(--surface);
       border: 1px solid var(--border);
-      border-radius: 12px;
+      border-radius: 6px;
       overflow: hidden;
     }
     .results-header {
@@ -271,20 +278,22 @@
       align-items: center;
       gap: 8px;
       padding: 12px 24px;
-      border-radius: 8px;
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: 14px;
-      font-weight: 600;
+      border-radius: 3px;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
       cursor: pointer;
       border: none;
       transition: all 0.15s;
     }
-    .btn-primary { background: var(--accent); color: #000; }
-    .btn-primary:hover { background: #f5d55a; }
+    .btn-primary { background: var(--accent); color: #0D1117; }
+    .btn-primary:hover { background: #d9ff26; }
     .btn-outline { background: none; border: 1px solid var(--border); color: var(--text); }
     .btn-outline:hover { border-color: var(--accent); color: var(--accent); }
-    .btn-green { background: var(--green); color: #000; }
-    .btn-green:hover { background: #72d9a2; }
+    .btn-green { background: var(--green); color: #0D1117; }
+    .btn-green:hover { background: #4ade80; }
     .btn-danger { background: none; border: 1px solid var(--border); color: var(--muted); }
     .btn-danger:hover { border-color: var(--accent2); color: var(--accent2); }
 
@@ -292,9 +301,12 @@
     .tabs { display: flex; gap: 4px; margin-bottom: 24px; }
     .tab {
       padding: 8px 16px;
-      border-radius: 8px;
-      font-size: 13px;
-      font-weight: 600;
+      border-radius: 3px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-family: 'Space Mono', monospace;
       cursor: pointer;
       border: 1px solid transparent;
       color: var(--muted);
@@ -329,12 +341,14 @@
       position: fixed;
       bottom: 28px;
       right: 28px;
-      background: var(--green);
-      color: #000;
+      background: var(--accent);
+      color: #0D1117;
       padding: 12px 20px;
-      border-radius: 10px;
-      font-size: 13px;
-      font-weight: 600;
+      border-radius: 3px;
+      font-size: 11px;
+      font-weight: 700;
+      font-family: 'Space Mono', monospace;
+      letter-spacing: 0.06em;
       opacity: 0;
       transform: translateY(10px);
       transition: all 0.25s;
@@ -365,10 +379,18 @@
 <!-- HEADER -->
 <header>
   <div class="logo">
-    <div class="logo-dot"></div>
+    <!-- Playbook isotipo inline -->
+    <svg width="36" height="36" viewBox="0 0 80 80" fill="none" style="flex-shrink:0;">
+      <rect width="80" height="80" rx="10" fill="#0D1117"/>
+      <rect x="18" y="16" width="10" height="48" rx="2" fill="#F0EDE4"/>
+      <path d="M28 16 Q58 16 58 31 Q58 46 28 46" fill="none" stroke="#F0EDE4" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M28 22 Q50 22 50 31 Q50 40 28 40" fill="#0D1117"/>
+      <line x1="28" y1="57" x2="55" y2="57" stroke="#CAFF00" stroke-width="7" stroke-linecap="round"/>
+      <polyline points="46,49 56,57 46,65" fill="none" stroke="#CAFF00" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
     <div>
-      <h1>Meta Ads Naming Tool</h1>
-      <div style="color:var(--muted);font-size:12px;margin-top:1px;">Generador de nombres · Campañas / Ad Sets / Anuncios / UTM</div>
+      <h1 style="font-family:'Bebas Neue',sans-serif;letter-spacing:0.08em;font-size:20px;line-height:1;">NAMING TOOL <span style="color:var(--accent)">— META ADS</span></h1>
+      <div style="color:var(--muted);font-size:11px;margin-top:2px;font-family:'Space Mono',monospace;letter-spacing:0.04em;">Campañas · Ad Sets · Anuncios · UTM</div>
     </div>
   </div>
   <div class="badge">v1.0</div>
