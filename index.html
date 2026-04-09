@@ -22,6 +22,7 @@
       --adset: #FF7F50;
       --ad: #22C55E;
       --utm: #38BDF8;
+      --email: #F59E0B;
     }
 
     body {
@@ -103,6 +104,7 @@
     .card-level.adset { border-top-color: var(--adset); }
     .card-level.ad { border-top-color: var(--ad); }
     .card-level.utm { border-top-color: var(--utm); }
+    .card-level.email { border-top-color: var(--email); }
 
     /* ─── FORM ELEMENTS ─── */
     label {
@@ -269,6 +271,7 @@
     .td-level.adset { background: rgba(232,88,58,0.15); color: var(--adset); }
     .td-level.ad { background: rgba(92,186,138,0.15); color: var(--ad); }
     .td-level.utm { background: rgba(0,184,217,0.15); color: var(--utm); }
+    .td-level.email { background: rgba(245,158,11,0.15); color: var(--email); }
     .td-name { font-family: 'Space Mono', monospace; font-size: 12px; }
 
     /* ─── BUTTONS ─── */
@@ -318,6 +321,7 @@
     .tab.active-adset { background: rgba(232,88,58,0.15); border-color: var(--adset); color: var(--adset); }
     .tab.active-ad { background: rgba(92,186,138,0.15); border-color: var(--ad); color: var(--ad); }
     .tab.active-utm { background: rgba(0,184,217,0.15); border-color: var(--utm); color: var(--utm); }
+    .tab.active-email { background: rgba(245,158,11,0.15); border-color: var(--email); color: var(--email); }
 
     /* ─── UTM URL BOX ─── */
     .utm-url-box {
@@ -463,6 +467,22 @@
           <span class="formula-part" style="border-color:var(--utm);color:var(--utm);">utm_term</span>
         </div>
       </div>
+      <div>
+        <div style="font-size:11px;color:var(--muted);margin-bottom:6px;font-weight:600;">CORREO</div>
+        <div class="formula">
+          <span class="formula-part" style="border-color:var(--email);color:var(--email);">TIPO</span>
+          <span class="sep">_</span>
+          <span class="formula-part" style="border-color:var(--email);color:var(--email);">PRODUCTO</span>
+          <span class="sep">_</span>
+          <span class="formula-part" style="border-color:var(--email);color:var(--email);">SEGMENTO</span>
+          <span class="sep">_</span>
+          <span class="formula-part" style="border-color:var(--email);color:var(--email);">TEMA</span>
+          <span class="sep">_</span>
+          <span class="formula-part" style="border-color:var(--email);color:var(--email);">VERSIÓN</span>
+          <span class="sep">_</span>
+          <span class="formula-part" style="border-color:var(--email);color:var(--email);">FECHA</span>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -472,6 +492,7 @@
     <button class="tab" onclick="switchTab('adset', this)">02 — Ad Set</button>
     <button class="tab" onclick="switchTab('ad', this)">03 — Anuncio</button>
     <button class="tab" onclick="switchTab('utm', this)">04 — UTM URL</button>
+    <button class="tab" onclick="switchTab('email', this)">05 — Correos</button>
   </div>
 
   <!-- ══════════════════════════════════════
@@ -840,6 +861,100 @@
   </div>
 
   <!-- ══════════════════════════════════════
+       PANEL CORREOS
+  ══════════════════════════════════════ -->
+  <div id="panel-email" style="display:none;">
+    <div class="grid-2">
+      <div class="card card-level email">
+        <div class="section-header">
+          <div class="section-dot" style="background:var(--email)"></div>
+          <div class="section-title">Datos del correo</div>
+        </div>
+
+        <div class="field">
+          <label>Tipo de correo</label>
+          <div class="chips" id="chips-email-tipo">
+            <span class="chip" data-val="PROMO">PROMO — Promocional</span>
+            <span class="chip" data-val="NEWS">NEWS — Newsletter</span>
+            <span class="chip" data-val="NUR">NUR — Nurturing</span>
+            <span class="chip" data-val="TRANS">TRANS — Transaccional</span>
+            <span class="chip" data-val="REACT">REACT — Reactivación</span>
+            <span class="chip" data-val="ONBOARD">ONBOARD — Onboarding</span>
+            <span class="chip" data-val="ABANDON">ABANDON — Carrito abandonado</span>
+            <span class="chip" data-val="EVENTO">EVENTO — Evento</span>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Producto / Campaña</label>
+          <input type="text" id="em-producto" placeholder="Ej: QuintoApp, HotSale, Webinar" oninput="updateEmailPreview()" />
+        </div>
+
+        <div class="field">
+          <label>Segmento de audiencia</label>
+          <div class="chips" id="chips-email-segmento">
+            <span class="chip" data-val="LEADS">Leads</span>
+            <span class="chip" data-val="CLIENTES">Clientes</span>
+            <span class="chip" data-val="INACTIVOS">Inactivos</span>
+            <span class="chip" data-val="VIP">VIP</span>
+            <span class="chip" data-val="TRIAL">Trial</span>
+            <span class="chip" data-val="ALL">Todos</span>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Tema / Asunto principal</label>
+          <input type="text" id="em-tema" placeholder="Ej: Bienvenida, 50OFF, Renovacion, Recordatorio" oninput="updateEmailPreview()" />
+        </div>
+
+        <div class="field">
+          <label>Versión / Variante (A/B)</label>
+          <div class="chips" id="chips-email-version">
+            <span class="chip" data-val="V1">V1</span>
+            <span class="chip" data-val="V2">V2</span>
+            <span class="chip" data-val="V3">V3</span>
+            <span class="chip" data-val="A">A</span>
+            <span class="chip" data-val="B">B</span>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Mes / Año</label>
+          <input type="month" id="em-fecha" oninput="updateEmailPreview()" />
+        </div>
+      </div>
+
+      <div>
+        <div class="card" style="margin-bottom:16px;">
+          <div class="section-header">
+            <div class="section-dot" style="background:var(--email)"></div>
+            <div class="section-title">Nombre generado</div>
+          </div>
+          <div class="preview-wrap">
+            <div class="preview-name mono" id="preview-email"><span class="preview-empty">Completa los campos →</span></div>
+            <button class="btn-copy" onclick="copyName('preview-email', this)">Copiar</button>
+          </div>
+          <p class="help-text" style="margin-top:10px;">Úsalo como nombre del flow, secuencia o archivo en tu ESP.</p>
+        </div>
+
+        <div class="card">
+          <div class="section-header">
+            <div class="section-dot" style="background:var(--accent)"></div>
+            <div class="section-title">Sufijo personalizado (opcional)</div>
+          </div>
+          <div class="field">
+            <label>Etiqueta extra</label>
+            <input type="text" id="em-sufijo" placeholder="Ej: RESEND, URGENTE, FINAL" oninput="updateEmailPreview()" />
+          </div>
+          <div class="btn-row">
+            <button class="btn btn-primary" onclick="addEmailToResults()">+ Agregar a la lista</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
        RESULTS TABLE
   ══════════════════════════════════════ -->
   <div class="results-card">
@@ -876,6 +991,7 @@
     const id = group.id;
     chipState[id] = null;
     const isUtm = id.startsWith('chips-utm-');
+    const isEmail = id.startsWith('chips-email-');
     group.querySelectorAll('.chip').forEach(chip => {
       chip.addEventListener('click', () => {
         group.querySelectorAll('.chip').forEach(c => c.classList.remove('selected'));
@@ -886,6 +1002,7 @@
           chipState[id] = chip.dataset.val;
         }
         if (isUtm) updateUtmPreview();
+        else if (isEmail) updateEmailPreview();
         else updatePreviews();
         saveState();
       });
@@ -992,7 +1109,7 @@
       return;
     }
 
-    const levelLabel = { campaign: 'Campaña', adset: 'Ad Set', ad: 'Anuncio', utm: 'UTM URL' };
+    const levelLabel = { campaign: 'Campaña', adset: 'Ad Set', ad: 'Anuncio', utm: 'UTM URL', email: 'Correo' };
 
     let html = `<table>
       <thead>
@@ -1097,7 +1214,7 @@
     if (results.length === 0) { toast('Agrega nombres primero'); return; }
 
     const header = 'Nivel,Nombre,URL Completa';
-    const levelLabel = { campaign: 'Campaña', adset: 'Ad Set', ad: 'Anuncio', utm: 'UTM URL' };
+    const levelLabel = { campaign: 'Campaña', adset: 'Ad Set', ad: 'Anuncio', utm: 'UTM URL', email: 'Correo' };
     const rows = results.map(r => {
       if (r.type === 'utm') {
         return `"${levelLabel[r.type]}","${r.name}","${r.url || ''}"`;
@@ -1148,7 +1265,7 @@
 
   // ─── TABS ────────────────────────────────────────────
   function switchTab(tab, btn) {
-    ['campaign', 'adset', 'ad', 'utm'].forEach(t => {
+    ['campaign', 'adset', 'ad', 'utm', 'email'].forEach(t => {
       document.getElementById('panel-' + t).style.display = 'none';
     });
     document.getElementById('panel-' + tab).style.display = 'block';
@@ -1278,12 +1395,41 @@
     toast('URL UTM agregada a la lista');
   }
 
+  // ─── EMAIL ───────────────────────────────────────────
+  function buildEmailName() {
+    const parts = [
+      chipState['chips-email-tipo'],
+      clean(document.getElementById('em-producto').value),
+      chipState['chips-email-segmento'],
+      clean(document.getElementById('em-tema').value),
+      chipState['chips-email-version'],
+      fmtDate(document.getElementById('em-fecha').value),
+    ].filter(Boolean);
+    const sufijo = clean(document.getElementById('em-sufijo').value);
+    if (sufijo) parts.push(sufijo);
+    return parts.join('_');
+  }
+
+  function updateEmailPreview() {
+    setPreview('preview-email', buildEmailName());
+  }
+
+  function addEmailToResults() {
+    const name = buildEmailName();
+    if (!name) { toast('Completa al menos un campo'); return; }
+    results.push({ type: 'email', name });
+    renderResults();
+    saveState();
+    toast('Nombre de correo agregado a la lista');
+  }
+
   // ─── PERSIST (localStorage) ──────────────────────────
   const INPUT_IDS = [
     'c-producto','c-ciudad','c-fecha','c-sufijo',
     'as-segmento','as-fecha','as-sufijo',
     'ad-copy','ad-fecha','ad-sufijo',
-    'utm-url','utm-campaign','utm-content','utm-term'
+    'utm-url','utm-campaign','utm-content','utm-term',
+    'em-producto','em-tema','em-fecha','em-sufijo'
   ];
 
   function saveState() {
@@ -1343,6 +1489,7 @@
   if (!document.getElementById('c-fecha').value)  document.getElementById('c-fecha').value  = monthVal;
   if (!document.getElementById('as-fecha').value) document.getElementById('as-fecha').value = monthVal;
   if (!document.getElementById('ad-fecha').value) document.getElementById('ad-fecha').value = monthVal;
+  if (!document.getElementById('em-fecha').value) document.getElementById('em-fecha').value = monthVal;
 
   // Auto-save on every input change
   INPUT_IDS.forEach(id => {
@@ -1352,6 +1499,7 @@
 
   updatePreviews();
   updateUtmPreview();
+  updateEmailPreview();
 </script>
 </body>
 </html>
